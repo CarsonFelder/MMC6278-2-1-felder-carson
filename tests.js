@@ -57,15 +57,19 @@ describe("Quote App", () => {
   ]
   const addQuote = (quote, author) => run(`addQuote ${quote ? `"${quote}"`: ""}` + (author ? ` "${author}"` : ""))
   const getQuote = () => run("getQuote");
-  before(async () => {
-    const stdout = await execAsync("ls");
-    expect(stdout).to.contain("quotes.txt");
-    await fs.rename('quotes.txt', '_quotes.txt').catch(() => {})
+  beforeEach(async () => {
+    try {
+      const stdout = await execAsync("dir"); // Use "dir" instead of "ls" for Windows
+      expect(stdout).to.contain("quotes.txt");
+      await fs.rename('quotes.txt', '_quotes.txt').catch(() => {})
+    } catch (error) {
+      console.error(error);
+    }
   });
   afterEach(async () => {
     await fs.unlink('quotes.txt').catch(() => {})
   })
-  after(async () => {
+  afterEach(async () => {
     await fs.rename('_quotes.txt', 'quotes.txt').catch(() => {})
   })
   it('should add quote to file', async () => {
